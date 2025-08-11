@@ -5,7 +5,8 @@ import {
   AreaChartExemple, 
   BarChartExemple, 
   LineBarExemple, 
-  LineChartExemple 
+  LineChartExemple,
+  PieChartExemple
 } from "../../utils/graphsExemples";
 
 export function Dashboard(){
@@ -21,8 +22,8 @@ export function Dashboard(){
       <AreaChartExemple />
       <LineChartExemple />
       <BarChartExemple />
-      <LineBarExemple />
-      {/* <PieChartExemple /> */}
+      {/* <LineBarExemple /> */}
+      <PieChartExemple />
     </div>
   )
 }

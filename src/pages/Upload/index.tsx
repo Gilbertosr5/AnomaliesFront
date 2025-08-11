@@ -55,14 +55,15 @@ export function Upload(){
   async function submitJSON(){
     try{
       setLoading(true);
-      const allFilled = Object.values(values).every(v => v !== null && v !== "" && !!v);
-      if(allFilled){
-        const response = await getPredictJSON(values);
-        console.log("Response =>", response);
-        navigate('/dashboard');
-      }else{
-        window.alert("Preencha todos os campos!");
-      }
+      // const allFilled = Object.values(values).every(v => v !== null && v !== "" && !!v);
+      // if(allFilled){
+      //   const response = await getPredictJSON(values);
+      //   console.log("Response =>", response);
+      //   navigate('/dashboard');
+      // }else{
+      //   window.alert("Preencha todos os campos!");
+      // }
+      navigate('/dashboard');
     }catch(error){
       console.log("Submit JSON ERROR =>", error)
     }finally{
