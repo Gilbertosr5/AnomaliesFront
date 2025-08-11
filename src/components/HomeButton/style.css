@@ -1,0 +1,34 @@
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: var(--light, #C9D1D9);
+  padding: 10px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  gap: 8px;
+}
+
+.home-button:hover {
+  background-color: var(--hover, #21262D);
+}
+
+.home-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.3s ease, opacity 0.3s ease;
+  font-size: 16px;
+  color: var(--text-primary, #C9D1D9);
+}
+
+.home-button:hover .home-label {
+  max-width: 80px; /* ou mais, conforme o tamanho do texto */
+  opacity: 1;
+}

@@ -1,0 +1,20 @@
+* {
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+h1{
+  color: var(--primary);
+  text-shadow: 0 5px 10px rgba(0,0,0,.5);
+}
+
+body{ 
+  background-color: var(--background);
+}
+
+p{
+  color: var(--light);
+}
