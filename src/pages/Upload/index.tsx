@@ -1,30 +1,35 @@
 import { CloudUpload, File } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css"; 
-import { ActivityIndicator, Input } from "../../components";
-import { getPredictCSV, getPredictJSON } from "../../services/getPredicties";
+// import { ActivityIndicator, Input } from "../../components";
+import { getPredictCSV, getPredictJSON, getPredictParquet } from "../../services/getPredicties";
+import excelLogo from "../../assets/excel.png";
+import parquetLogo from "../../assets/parquet-logo.png";
+import { DashboardContext } from "../../contexts/Dashboard";
 
-interface valuesTypes{
-  proto: string,
-  state: string,
-  dur: number | null,
-  sbytes: number | null,
-  dbytes: number | null,
-}
+// interface valuesTypes{
+//   proto: string,
+//   state: string,
+//   dur: number | null,
+//   sbytes: number | null,
+//   dbytes: number | null,
+// }
 
 export function Upload(){
+  const { getData } = useContext(DashboardContext);
   const [file, setFile] = useState<File | null>(null);
-  const [isFileInput, setIsFileInput] = useState<boolean>(true);
+  // const [isFileInput, setIsFileInput] = useState<boolean>(true);
+  const [fileType, setFileType] = useState<'csv' | 'parquet'>('parquet');
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [values, setValues] = useState({
-    proto: "",
-    state: "",
-    dur: null,
-    sbytes: null,
-    dbytes: null,
-  });
+  // const [values, setValues] = useState({
+  //   proto: "",
+  //   state: "",
+  //   dur: null,
+  //   sbytes: null,
+  //   dbytes: null,
+  // });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -44,40 +49,37 @@ export function Upload(){
   };
   
   // Função para atualizar qualquer campo do objeto
-  const handleInputChange = (key: string, value: string | number | null, type: "string" | "number" = "string") => {
-    if(type === "number"){
-      setValues(prev => ({ ...prev, [key]: Number(value) }));
-    }else{
-      setValues(prev => ({ ...prev, [key]: value }));
-    }
-  };
+  // const handleInputChange = (key: string, value: string | number | null, type: "string" | "number" = "string") => {
+  //   if(type === "number"){
+  //     setValues(prev => ({ ...prev, [key]: Number(value) }));
+  //   }else{
+  //     setValues(prev => ({ ...prev, [key]: value }));
+  //   }
+  // };
 
-  async function submitJSON(){
-    try{
-      setLoading(true);
-      // const allFilled = Object.values(values).every(v => v !== null && v !== "" && !!v);
-      // if(allFilled){
-      //   const response = await getPredictJSON(values);
-      //   console.log("Response =>", response);
-      //   navigate('/dashboard');
-      // }else{
-      //   window.alert("Preencha todos os campos!");
-      // }
-      navigate('/dashboard');
-    }catch(error){
-      console.log("Submit JSON ERROR =>", error)
-    }finally{
-      setLoading(false);
-    }
-  }
+  // async function submitJSON(){
+  //   try{
+  //     setLoading(true);
+  //     const allFilled = Object.values(values).every(v => v !== null && v !== "" && !!v);
+  //     if(allFilled){
+  //       const response = await getPredictJSON(values);
+  //       console.log("Response =>", response);
+  //       navigate('/dashboard');
+  //     }else{
+  //       window.alert("Preencha todos os campos!");
+  //     }
+  //   }catch(error){
+  //     console.log("Submit JSON ERROR =>", error)
+  //   }finally{
+  //     setLoading(false);
+  //   }
+  // }
   
   async function submitFile(){
     try{
       setLoading(true);
       if(file){
-        const response = await getPredictCSV(file);
-        console.log("Response =>", response);
-        navigate('/dashboard');
+        getData(fileType, file);
       }else{
         window.alert("Selecione um arquivo!");
       }
@@ -93,15 +95,21 @@ export function Upload(){
       <h1>Envie sua Rede abaixo</h1>
       <div className="buttonArea">
         <button 
-          onClick={()=> setIsFileInput(true)}
-          className={`select-button ${isFileInput && 'active'}`}
-        >Arquivo CSV</button>
+          onClick={()=> {
+            setFileType('parquet');
+            setFile(null);
+          }}
+          className={`select-button ${fileType === "parquet" && 'active'}`}
+        >Parquet</button>
         <button 
-          onClick={()=> setIsFileInput(false)}
-          className={`select-button ${!isFileInput && 'active'}`}
-        >Conexão individual</button>
+          onClick={()=> {
+            setFileType('csv');
+            setFile(null);
+          }}
+          className={`select-button ${fileType === "csv" && 'active'}`}
+        >CSV</button>
       </div>
-      {!isFileInput && (
+      {/* {!isFileInput && (
         <div className="input-area">
           <Input
             placeholder="Digite o Protocolo..."
@@ -142,9 +150,9 @@ export function Upload(){
           >Enviar</button>
 
         </div>
-      )}
+      )} */}
 
-      {isFileInput && <div
+      {fileType === "csv" && <div
         className="file-upload"
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -166,7 +174,11 @@ export function Upload(){
             </div>
           ) : (
             <div>
-              <File size={40} style={{width:"100%"}} color="#238636" />
+              <img 
+                src={excelLogo}
+                alt="Arquivo CSV"
+                style={{ width: 48, height: 48, marginBottom: 16 }}
+              />
               <p><strong>Arquivo selecionado</strong></p>
               <p>{file.name}</p>
             </div>
@@ -174,9 +186,47 @@ export function Upload(){
         </label>
       </div>}
 
-      <button onClick={()=> submitFile()} className='submit-btn' style={{opacity: file? 1:0}}>
-        {loading? <ActivityIndicator /> : "Enviar"}
-      </button>
+      {fileType === "parquet" && <div
+        className="file-upload"
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
+        <input
+          type="file"
+          accept=".parquet"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+          id="fileInput"
+        />
+        <label htmlFor="fileInput" className='file-upload-label'>
+          {!file? (
+            <div>
+              <CloudUpload size={50} style={{width:"100%"}} color="#8B949E" />
+              <strong style={{fontSize:20}}>Arraste e solte o dataset aqui</strong>
+              <p>ou</p>
+              <strong>clique para selecionar</strong>
+            </div>
+          ) : (
+            <div>
+              <img 
+                src={parquetLogo}
+                alt="Arquivo Parquet"
+                style={{ width: 48, height: 48, marginBottom: 16 }}
+              />
+              <p><strong>Arquivo selecionado</strong></p>
+              <p>{file.name}</p>
+            </div>
+          )}
+        </label>
+      </div>}
+
+      {!loading ? 
+      <button 
+        onClick={()=> submitFile()} 
+        className='submit-btn' 
+        style={{opacity: file? 1:0}}
+      >Enviar</button>
+      : <div className="spinner" />}
     </div>
   )
 }
